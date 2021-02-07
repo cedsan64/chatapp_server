@@ -2,16 +2,16 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
+const http = require('http').Server(app);
 var db = require("./db")
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
 var cors = require('cors');
 var authRouter = require("./authRouter");
 var userRouter = require("./userRouter");
-
-const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+var msgNotifRouter = require("./msgNotifRouter");
+msgNotifRouter.initSocketIO(http);
 
 app.use(cors())
+
 app.use(express.json());
 
 app.use('/', authRouter);
@@ -33,8 +33,7 @@ app.use((req,res,next) =>{
 })
 
 app.get("/maindata",(req,res) => {
-    
-    // console.log(res.locals.user)
+
     db.get("SELECT username FROM customers WHERE email= ?",[res.locals.user.email],(err,data)=>{
         return res.json({username:data.username})
     })
@@ -42,6 +41,6 @@ app.get("/maindata",(req,res) => {
 })
 app.use('/', userRouter);
 
-app.listen(3030,()=>{
+http.listen(process.env.PORT,()=>{
     console.log(`http://${process.env.HOSTNAME}:${process.env.PORT}`)
 })

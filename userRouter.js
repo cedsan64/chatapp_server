@@ -18,14 +18,11 @@ router.get('/finduser',(req,res) => {
         allData.sent = [...data1];
         db.all(sql2,[req.query.q+"%",req.query.q+"%"],(err,data2)=>{
             if (err) return res.status(500).json({status :500,response:"internal server error"});
-            // res.status(200).json({status :200, data:data});
             allData.receive = [...data2];
             db.all(sql3,[req.query.q+"%",req.query.q+"%"],(err,data3)=>{
                 if (err) return res.status(500).json({status :500,response:"internal server error"});
-                // res.status(200).json({status :200, data:data});
                 allData.other = [...data3];
                 res.status(200).json({status :200, data:allData});
-                
             })
         })
     })
